@@ -1,6 +1,8 @@
+// src/auth/jwt.strategy.ts
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt } from 'passport-jwt';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { jwtConstants } from '../constants'; // Ensure this points to your secret
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -8,12 +10,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'your-secret-key',  // Use a strong secret in production
+      secretOrKey: jwtConstants.secret, // Ensure secret is consistent
     });
   }
 
   async validate(payload: any) {
-    // Add your validation logic here, e.g., checking the user in the database
+    // Return any info you want available in your request (e.g., userId)
     return { userId: payload.sub, username: payload.username };
   }
 }

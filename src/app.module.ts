@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { YourEntityModule } from './your-entity/your-entity-module'; // Check if the file path is correct and if the module file exists
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { YourEntityModule } from './your-entity/your-entity-module'; // Make sure the path is correct
+import { AuthModule } from './auth/auth.module'; // Import your AuthModule
+import { jwtConstants } from './auth/constants'; // Import the JWT secret
 
 @Module({
   imports: [
@@ -14,7 +18,13 @@ import { YourEntityModule } from './your-entity/your-entity-module'; // Check if
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, // Set to false in production
     }),
-    YourEntityModule,
+    YourEntityModule, // Your custom entity module
+    AuthModule, // Import AuthModule for authentication
+    PassportModule.register({ defaultStrategy: 'jwt' }), // Register Passport with 'jwt' as default strategy
+    JwtModule.register({
+      secret: jwtConstants.secret, // Your JWT secret
+      signOptions: { expiresIn: '1d' }, // JWT expiration time
+    }),
   ],
 })
 export class AppModule {}
